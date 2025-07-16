@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Interativo: Next.js, Supabase & Zustand</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Habilita o modo escuro baseado em classe
+        }
+    </script>
+    
+    <style>
+        /* Estilização da barra de rolagem */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Estilo do link ativo na navegação lateral */
+        .sidebar-link.active {
+            color: #3b82f6; /* Azul primário */
+            font-weight: 600;
+            border-left-color: #3b82f6;
+        }
+        .dark .sidebar-link.active {
+            color: #60a5fa;
+            border-left-color: #60a5fa;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+    <button id="theme-toggle" class="fixed top-4 right-4 z-50 p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-md">
+        <svg id="theme-toggle-dark-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        <svg id="theme-toggle-light-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+    </button>
+    
+    <div class="flex">
+        <aside class="fixed top-0 left-0 h-screen w-64 p-4 border-r border-slate-200 dark:border-slate-800 hidden lg:block">
+            <h2 class="text-xl font-bold mb-4">Índice</h2>
+            <nav>
+                <ol id="sidebar-nav" class="space-y-2">
+                    </ol>
+            </nav>
+        </aside>
+
+        <main class="w-full lg:ml-64 p-4 md:p-8">
+            <div class="max-w-4xl mx-auto">
+                <header class="mb-12">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white">Manual de Desenvolvimento Moderno</h1>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 mt-3">Guia Interativo: Next.js, TypeScript, Supabase & Zustand</p>
+                </header>
+
+                <div id="manual-content" class="space-y-16">
+                    
+                    <section id="step-1" class="manual-section">
+                        <h2 class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 1: Configuração Inicial</h2>
+                        <p>Execute o comando abaixo para criar a estrutura base do projeto.</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-bash">npx create-next-app@latest seu-app-supabase</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-2" class="manual-section">
+                        <h2 class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 2: Setup do Supabase e SQL</h2>
+                        <p>No <strong>SQL Editor</strong> do seu projeto Supabase, execute o script abaixo para criar a tabela de perfis e configurar a segurança.</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-sql">-- Cria a tabela para perfis públicos
+CREATE TABLE public.profiles (
+  id UUID NOT NULL PRIMARY KEY,
+  username TEXT,
+  avatar_url TEXT,
+  updated_at TIMESTAMP WITH TIME ZONE,
+  CONSTRAINT "profiles_id_fkey" FOREIGN KEY (id) REFERENCES auth.users (id) ON DELETE CASCADE
+);
+
+-- Habilita a Segurança em Nível de Linha (RLS)
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- Políticas de acesso
+CREATE POLICY "Public profiles are viewable by everyone." ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Users can update their own profile." ON public.profiles FOR UPDATE USING (auth.uid() = id);
+
+-- Trigger para criar perfil de novo usuário
+CREATE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id) VALUES (new.id);
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-3" class="manual-section">
+                        <h2 class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 3: Integração com Next.js</h2>
+                        <p>Instale as bibliotecas do Supabase:</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-bash">npm install @supabase/supabase-js @supabase/ssr</code></pre>
+                        </div>
+                        <p class="mt-4">Crie o arquivo <code>.env.local</code> com suas chaves:</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-plaintext"># .env.local - Encontre em Project Settings > API
+NEXT_PUBLIC_SUPABASE_URL=SUA_PROJECT_URL_AQUI
+NEXT_PUBLIC_SUPABASE_ANON_KEY=SUA_ANON_KEY_AQUI</code></pre>
+                        </div>
+                        <p class="mt-4">Crie o cliente Supabase para o browser em <code>lib/supabase/client.ts</code>:</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-typescript">import { createBrowserClient } from '@supabase/ssr'
+
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-4" class="manual-section">
+                        <h2 class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 4: Estrutura de Pastas</h2>
+                        <p>A organização final do seu projeto se parecerá com esta:</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-plaintext">/
+├── app/
+│   ├── dashboard/, login/, cadastro/
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+│   └── AuthProvider.tsx
+├── lib/
+│   └── supabase/
+│       ├── client.ts
+│       └── server.ts
+├── store/
+│   └── userStore.ts
+├── .env.local
+└── middleware.ts</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-5" class="manual-section">
+                        <h2 class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 5: Store com Zustand</h2>
+                        <p>Instale o Zustand e crie a store em <code>store/userStore.ts</code>.</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-bash">npm install zustand</code></pre>
+                        </div>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-typescript">import { create } from 'zustand'
+import type { User } from '@supabase/supabase-js'
+
+interface UserState {
+  user: User | null
+  isLoading: boolean
+  setUser: (user: User | null) => void
+}
+
+export const useUserStore = create<UserState>((set) => ({
+  user: null,
+  isLoading: true,
+  setUser: (user) => set({ user, isLoading: false }),
+}))</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-6" class="manual-section">
+                        <h2 class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 6: Páginas de Autenticação</h2>
+                        <p>Crie as páginas de Login e Cadastro. O código para ambas é similar, usando os hooks do React e o cliente Supabase. Abaixo, o exemplo para <code>app/login/page.tsx</code>.</p>
+                         <div class="code-container relative mt-4">
+                            <pre><code class="language-tsx">'use client'
+
+import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+
+export default function LoginPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const router = useRouter()
+  const supabase = createClient()
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) {
+      alert('Erro no login: ' + error.message)
+    } else {
+      router.refresh() // Força o middleware a reavaliar a rota
+    }
+  }
+
+  // ... (retorno do formulário JSX)
+  return (
+    <form onSubmit={handleSignIn}>
+        {/* Inputs para email e senha e botão de submit */}
+    </form>
+  )
+}</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-7" class="manual-section">
+                        <h2 class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 7: AuthProvider</h2>
+                        <p>Crie o "ouvinte" de autenticação em <code>components/AuthProvider.tsx</code> e use-o no layout principal.</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-tsx">'use client'
+import { useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useUserStore } from '@/store/userStore'
+
+export default function AuthProvider({ children }: { children: React.ReactNode }) {
+  const supabase = createClient()
+  const { setUser } = useUserStore()
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [supabase, setUser])
+
+  return <>{children}</>
+}</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-8" class="manual-section">
+                        <h2 class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 8: Middleware de Proteção</h2>
+                        <p>Crie o arquivo <code>middleware.ts</code> na raiz do projeto para proteger as rotas no servidor.</p>
+                         <div class="code-container relative mt-4">
+                            <pre><code class="language-typescript">import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+
+export async function middleware(request: NextRequest) {
+  // Lógica para criar o cliente Supabase no servidor
+  // ...
+
+  const { data: { user } } = await supabase.auth.getUser()
+  const { pathname } = request.nextUrl
+
+  // Se não há usuário e tenta acessar /dashboard, redireciona para /login
+  if (!user && pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // Se há usuário e tenta acessar /login, redireciona para /dashboard
+  if (user && pathname.startsWith('/login')) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  return response
+}
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/login', '/cadastro'],
+}</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-9" class="manual-section">
+                        <h2 class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 9: Dashboard e Logout</h2>
+                        <p>A página final do dashboard, onde o usuário logado chega e pode sair.</p>
+                         <div class="code-container relative mt-4">
+                            <pre><code class="language-tsx">'use client'
+
+import { useUserStore } from '@/store/userStore'
+import { createClient } from '@/lib/supabase/client'
+
+export default function DashboardPage() {
+  const { user, isLoading } = useUserStore()
+  const supabase = createClient()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    // O router.refresh() ou o AuthProvider cuidarão do redirecionamento
+  }
+  
+  if (isLoading) return <p>Carregando...</p>
+  
+  if (!user) return <p>Acesso negado.</p>
+
+  return (
+    <div>
+      <h1>Bem-vindo, {user.email}!</h1>
+      <button onClick={handleLogout}>Sair</button>
+    </div>
+  )
+}</code></pre>
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. INICIALIZAR DESTAQUE DE SINTAXE
+            hljs.highlightAll();
+            
+            // 2. ADICIONAR BOTÕES DE "COPIAR"
+            const allCodeBlocks = document.querySelectorAll('.code-container pre');
+            allCodeBlocks.forEach(pre => {
+                const code = pre.querySelector('code');
+                const btn = document.createElement('button');
+                btn.textContent = 'Copiar';
+                btn.className = 'absolute top-2 right-2 px-2 py-1 text-xs rounded bg-slate-600 text-white hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-800 transition-colors';
+                
+                btn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(code.innerText).then(() => {
+                        btn.textContent = 'Copiado!';
+                        setTimeout(() => {
+                            btn.textContent = 'Copiar';
+                        }, 2000);
+                    });
+                });
+                
+                pre.parentNode.insertBefore(btn, pre);
+            });
+
+            // 3. NAVEGAÇÃO E SCROLLSPY
+            const sections = document.querySelectorAll('.manual-section');
+            const sidebarNav = document.getElementById('sidebar-nav');
+            
+            // Criar links da sidebar dinamicamente
+            sections.forEach(section => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = `#${section.id}`;
+                a.textContent = section.querySelector('h2').textContent;
+                a.className = 'sidebar-link block border-l-2 border-transparent pl-4 py-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors';
+                li.appendChild(a);
+                sidebarNav.appendChild(li);
+            });
+            
+            const navLinks = document.querySelectorAll('.sidebar-link');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-30% 0px -70% 0px" }); // Ativa quando a seção está no terço superior da tela
+
+            sections.forEach(section => observer.observe(section));
+
+            // 4. LÓGICA DO TEMA ESCURO
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const darkIcon = document.getElementById('theme-toggle-dark-icon');
+            const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+            // Checar preferência no carregamento
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                lightIcon.classList.remove('hidden');
+            } else {
+                darkIcon.classList.remove('hidden');
+            }
+
+            themeToggleBtn.addEventListener('click', function() {
+                darkIcon.classList.toggle('hidden');
+                lightIcon.classList.toggle('hidden');
+
+                if (localStorage.getItem('theme')) {
+                    if (localStorage.getItem('theme') === 'light') {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('theme', 'light');
+                    }
+                } else {
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('theme', 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('theme', 'dark');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

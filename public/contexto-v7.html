@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Interativo: Next.js, Supabase & Zustand</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    
+    <style>
+        /* Estilização da barra de rolagem */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        .dark ::-webkit-scrollbar-track { background: #2d3748; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        /* Estilo do link ativo na navegação lateral (Desktop) */
+        .sidebar-link.active {
+            color: #3b82f6;
+            font-weight: 600;
+            border-left-color: #3b82f6;
+        }
+        .dark .sidebar-link.active {
+            color: #60a5fa;
+            border-left-color: #60a5fa;
+        }
+        
+        /* Estilos para o Menu Mobile Sticky */
+        .mobile-menu-item .item-number {
+             transition: all 0.3s ease;
+        }
+        .mobile-menu-item.active .item-number {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .dark .mobile-menu-item.active .item-number {
+            background-color: #60a5fa;
+            color: #1e293b;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+    <button id="theme-toggle" class="fixed top-4 right-4 z-50 p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-md">
+        <svg id="theme-toggle-dark-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        <svg id="theme-toggle-light-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+    </button>
+    
+    <div class="flex">
+        <aside class="fixed top-0 left-0 h-screen w-64 p-4 border-r border-slate-200 dark:border-slate-800 hidden lg:block">
+            <h2 class="text-xl font-bold mb-4">Índice</h2>
+            <nav>
+                <ol id="sidebar-nav" class="space-y-2">
+                    </ol>
+            </nav>
+        </aside>
+
+        <main class="w-full lg:ml-64 p-4 md:p-8 pb-24 lg:pb-8">
+            <div class="max-w-4xl mx-auto">
+                <header class="mb-12">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white">Manual de Desenvolvimento Moderno</h1>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 mt-3">Guia Interativo: Next.js, TypeScript, Supabase & Zustand</p>
+                </header>
+
+                <div id="manual-content" class="space-y-16">
+                    
+                    <section id="step-1" class="manual-section">
+                        <h2 data-title="Configuração Inicial" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 1: Configuração Inicial</h2>
+                        <p>Execute o comando abaixo para criar a estrutura base do projeto.</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-bash">npx create-next-app@latest seu-app-supabase</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-2" class="manual-section">
+                        <h2 data-title="Setup do Supabase e SQL" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 2: Setup do Supabase e SQL</h2>
+                        <p>No <strong>SQL Editor</strong> do seu projeto Supabase, execute o script abaixo para criar a tabela de perfis e configurar a segurança.</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-sql">-- Cria a tabela para perfis públicos
+CREATE TABLE public.profiles (
+  id UUID NOT NULL PRIMARY KEY,
+  username TEXT,
+  avatar_url TEXT,
+  CONSTRAINT "profiles_id_fkey" FOREIGN KEY (id) REFERENCES auth.users (id) ON DELETE CASCADE
+);
+-- ... (resto do SQL)
+</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-3" class="manual-section">
+                        <h2 data-title="Integração com Next.js" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 3: Integração com Next.js</h2>
+                        <p>Instale as bibliotecas do Supabase e configure suas variáveis de ambiente.</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-bash">npm install @supabase/supabase-js @supabase/ssr</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-4" class="manual-section">
+                        <h2 data-title="Estrutura de Pastas" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 4: Estrutura de Pastas</h2>
+                        <p>A organização final do seu projeto se parecerá com esta:</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-plaintext">/
+├── app/
+├── components/
+├── lib/
+├── store/
+├── .env.local
+└── middleware.ts</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-5" class="manual-section">
+                        <h2 data-title="Store com Zustand" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 5: Store com Zustand</h2>
+                        <p>Instale o Zustand e crie a store em <code>store/userStore.ts</code>.</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-typescript">import { create } from 'zustand'
+// ... (código da store)
+</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-6" class="manual-section">
+                        <h2 data-title="Páginas de Autenticação" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 6: Páginas de Autenticação</h2>
+                        <p>Crie as páginas de Login e Cadastro, como <code>app/login/page.tsx</code>.</p>
+                         <div class="code-container relative mt-4">
+                            <pre><code class="language-tsx">'use client'
+import { useState } from 'react'
+// ... (código da página de login)
+</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-7" class="manual-section">
+                        <h2 data-title="AuthProvider" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 7: AuthProvider</h2>
+                        <p>Crie o "ouvinte" de autenticação em <code>components/AuthProvider.tsx</code>.</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-tsx">'use client'
+import { useEffect } from 'react'
+// ... (código do AuthProvider)
+</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-8" class="manual-section">
+                        <h2 data-title="Middleware de Proteção" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 8: Middleware de Proteção</h2>
+                        <p>Crie o arquivo <code>middleware.ts</code> na raiz do projeto.</p>
+                         <div class="code-container relative mt-4">
+                            <pre><code class="language-typescript">import { createServerClient } from '@supabase/ssr'
+// ... (código do middleware)
+</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-9" class="manual-section">
+                        <h2 data-title="Dashboard e Logout" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 9: Dashboard e Logout</h2>
+                        <p>A página final do dashboard, onde o usuário logado chega e pode sair.</p>
+                         <div class="code-container relative mt-4">
+                            <pre><code class="language-tsx">'use client'
+import { useUserStore } from '@/store/userStore'
+// ... (código do dashboard)
+</code></pre>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div id="mobile-menu" class="lg:hidden fixed bottom-0 left-0 right-0 p-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-[0_-1px_4px_rgba(0,0,0,0.1)] z-40">
+        <div id="mobile-menu-items" class="flex items-center space-x-2 overflow-x-auto pb-1">
+            </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. INICIALIZAR DESTAQUE DE SINTAXE
+            hljs.highlightAll();
+            
+            // 2. LÓGICA DO TEMA ESCURO
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const darkIcon = document.getElementById('theme-toggle-dark-icon');
+            const lightIcon = document.getElementById('theme-toggle-light-icon');
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    darkIcon.classList.add('hidden');
+                    lightIcon.classList.remove('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    lightIcon.classList.add('hidden');
+                    darkIcon.classList.remove('hidden');
+                }
+            };
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+            themeToggleBtn.addEventListener('click', () => {
+                const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
+
+            // 3. SETUP DOS ELEMENTOS DE NAVEGAÇÃO
+            const sections = document.querySelectorAll('.manual-section');
+            const sidebarNav = document.getElementById('sidebar-nav');
+            const mobileMenu = document.getElementById('mobile-menu-items');
+
+            sections.forEach((section, index) => {
+                const id = section.id;
+                const title = section.querySelector('h2').dataset.title;
+                const step = index + 1;
+
+                // Criar item da Sidebar (Desktop)
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = `#${id}`;
+                a.textContent = `${step}. ${title}`;
+                a.className = 'sidebar-link block border-l-2 border-transparent pl-4 py-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors';
+                li.appendChild(a);
+                sidebarNav.appendChild(li);
+
+                // Criar item do Menu (Mobile)
+                const mobileLink = document.createElement('a');
+                mobileLink.href = `#${id}`;
+                mobileLink.className = 'mobile-menu-item flex-shrink-0 flex items-center p-1 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300 ease-in-out';
+                mobileLink.innerHTML = `
+                    <span class="item-number flex items-center justify-center h-8 w-8 rounded-full font-bold text-slate-600 dark:text-slate-300">${step}</span>
+                    <span class="item-title hidden ml-2 mr-2 font-semibold whitespace-nowrap text-sm">${title}</span>
+                `;
+                mobileMenu.appendChild(mobileLink);
+
+                // Evento de clique para scroll suave
+                [a, mobileLink].forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        section.scrollIntoView({ behavior: 'smooth' });
+                        
+                        // Lógica de expansão/retração do menu mobile ao clicar
+                        document.querySelectorAll('.mobile-menu-item').forEach(item => {
+                            item.classList.remove('expanded', 'bg-blue-100', 'dark:bg-blue-900');
+                            item.querySelector('.item-title').classList.add('hidden');
+                        });
+                        mobileLink.classList.add('expanded', 'bg-blue-100', 'dark:bg-blue-900');
+                        mobileLink.querySelector('.item-title').classList.remove('hidden');
+                    });
+                });
+            });
+
+            // 4. ADICIONAR BOTÕES DE "COPIAR"
+            document.querySelectorAll('.code-container pre').forEach(pre => {
+                const btn = document.createElement('button');
+                btn.textContent = 'Copiar';
+                btn.className = 'absolute top-2 right-2 px-2 py-1 text-xs rounded bg-slate-600 text-white hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-800 transition-colors opacity-50 hover:opacity-100';
+                pre.parentNode.insertBefore(btn, pre);
+                btn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(pre.querySelector('code').innerText).then(() => {
+                        btn.textContent = 'Copiado!';
+                        setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+                    });
+                });
+            });
+
+            // 5. SCROLLSPY OBSERVER (Sincroniza navegação com a rolagem)
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const id = entry.target.getAttribute('id');
+                    const sidebarLink = document.querySelector(`.sidebar-link[href="#${id}"]`);
+                    const mobileItem = document.querySelector(`.mobile-menu-item[href="#${id}"]`);
+                    
+                    if (entry.isIntersecting) {
+                        // Ativa o link da sidebar
+                        document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                        sidebarLink.classList.add('active');
+                        
+                        // Ativa o item do menu mobile (apenas o círculo)
+                        document.querySelectorAll('.mobile-menu-item').forEach(i => i.classList.remove('active'));
+                        mobileItem.classList.add('active');
+
+                        // Garante que o item ativo esteja visível na barra de rolagem mobile
+                        mobileItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                });
+            }, { rootMargin: "-40% 0px -60% 0px" });
+
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+</body>
+</html>

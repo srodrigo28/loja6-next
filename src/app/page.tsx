@@ -87,8 +87,8 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="flex-1 max-w-6xl mx-auto px-6 py-10">
-        <h1 className="text-3xl font-bold text-center mb-10 text-blue-700">🛍️ Produtos em Destaque</h1>
+      <main className="flex-1 max-w-6xl mx-auto px-6 py-10 mt-10">
+        {/* <h1 className="text-3xl font-bold text-center mb-10 text-blue-700">🛍️ Produtos em Destaque</h1> */}
 
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {produtosFiltrados.map((produto, i) => (
@@ -102,7 +102,8 @@ export default function HomePage() {
               onClick={() => setProdutoSelecionado(produto)}
             >
               <Card
-                className="group overflow-hidden flex flex-col h-[460px] bg-white shadow-md hover:shadow-2xl 
+                className="group overflow-hidden flex flex-col h-[460px] 
+                bg-white shadow-md hover:shadow-2xl w-80
                 transition duration-300 ease-in-out cursor-pointer border border-transparent 
                 hover:border-blue-500"
               >

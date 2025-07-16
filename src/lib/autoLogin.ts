@@ -1,30 +1,27 @@
-// lib/autoLogin.ts
-
 import { supabase } from '@/lib/supabaseClient'
 import { useUserStore } from '@/store/useUserStore'
 
 export async function carregarSessaoUsuario() {
-  const { data: sessionData, error: sessionError } = await supabase.auth.getUser()
+  const { data, error } = await supabase.auth.getUser()
 
-  if (sessionError || !sessionData?.user) {
-    console.warn("Nenhum usuário logado.")
-    return
-  }
+  if (error || !data?.user) return
 
-  const { user } = sessionData
-
-  const { data: usuarioDB, error: errorPerfil } = await supabase
+  const { data: usuarioDB, error: erroPerfil } = await supabase
     .from('usuarios')
-    .select('nome, telefone, email, avatar_url, papel')
-    .eq('user_id', user.id)
+    .select('id, nome, telefone, email, avatar_url, papel')
+    .eq('user_id', data.user.id)
     .single()
 
-  if (errorPerfil || !usuarioDB) {
-    console.error("Erro ao buscar dados do usuário:", errorPerfil)
-    return
-  }
+  if (erroPerfil || !usuarioDB) return
 
-  // Atribui ao Zustand
+  // Atribui ao Zustand com todos os campos obrigatórios
   const setUser = useUserStore.getState().setUser
-  setUser(usuarioDB)
+  setUser({
+    id: usuarioDB.id,
+    nome: usuarioDB.nome,
+    telefone: usuarioDB.telefone,
+    email: usuarioDB.email,
+    avatar_url: usuarioDB.avatar_url,
+    papel: usuarioDB.papel
+  })
 }
