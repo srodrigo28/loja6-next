@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Sequencial: Next.js, TypeScript, Supabase e Zustand</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f3f4f6; /* cinza claro de fundo */
+        }
+        .step-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        .step-header {
+            background-color: #111827; /* cinza escuro */
+            color: white;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #374151;
+        }
+        .step-content {
+            padding: 1.5rem;
+        }
+        code {
+            background-color: #1f2937; /* cinza mais escuro para código */
+            color: #d1d5db; /* cor do texto do código */
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        pre {
+            background-color: #1f2937;
+            color: #d1d5db;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+         pre code {
+            padding: 0;
+            background-color: transparent;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800">Mapa Sequencial de Desenvolvimento</h1>
+            <p class="text-lg text-gray-600 mt-2">Guia para Aplicação com Next.js, TypeScript, Supabase e Zustand</p>
+        </header>
+
+        <div class="step-card">
+            <div class="step-header">
+                <h2 class="text-2xl font-bold">Passo 1: Configuração Inicial do Projeto Next.js</h2>
+            </div>
+            <div class="step-content">
+                <p class="text-gray-700 mb-4">
+                    O primeiro passo é criar a estrutura base do nosso projeto com o Next.js já configurado para usar TypeScript e Tailwind CSS, utilizando o novo <strong>App Router</strong>.
+                </p>
+                <pre><code class="language-bash">npx create-next-app@latest meu-app-supabase</code></pre>
+                <p class="text-gray-700 my-4">Durante a instalação, selecione as seguintes opções:</p>
+                <ul class="list-disc list-inside text-gray-700 space-y-2">
+                    <li>Would you like to use <strong>TypeScript</strong>? <code class="text-green-400">Yes</code></li>
+                    <li>Would you like to use <strong>ESLint</strong>? <code class="text-green-400">Yes</code></li>
+                    <li>Would you like to use <strong>Tailwind CSS</strong>? <code class="text-green-400">Yes</code></li>
+                    <li>Would you like to use <strong>`src/` directory</strong>? <code class="text-green-400">No</code> (ou Yes, é opcional)</li>
+                    <li>Would you like to use <strong>App Router</strong>? <code class="text-green-400">Yes</code></li>
+                    <li>Would you like to customize the default import alias? <code class="text-gray-400">No</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-header">
+                <h2 class="text-2xl font-bold">Passo 2: Configurando o Projeto no Supabase</h2>
+            </div>
+            <div class="step-content">
+                <p class="text-gray-700 mb-4">
+                    Agora, vamos configurar nosso backend no Supabase.
+                </p>
+                <ol class="list-decimal list-inside text-gray-700 space-y-3">
+                    <li>Acesse <a href="https://supabase.com/" target="_blank" class="text-blue-600 hover:underline">supabase.com</a> e crie uma conta ou faça login.</li>
+                    <li>Crie um novo projeto ("New Project"). Escolha um nome e uma senha forte para o banco de dados.</li>
+                    <li>Após a criação do projeto, vá para <strong>Project Settings</strong> (ícone de engrenagem) > <strong>API</strong>.</li>
+                    <li>Você precisará de duas informações: a <strong>Project URL</strong> e a <strong>API Key</strong> do tipo <code>anon public</code>. Guarde-as para o próximo passo.</li>
+                    <li class="bg-yellow-100 p-3 rounded-md">
+                        <strong>Dica de Desenvolvimento:</strong> Para facilitar os testes iniciais, você pode desativar a confirmação de e-mail. Vá em <strong>Authentication</strong> > <strong>Providers</strong> > <strong>Email</strong> e desative a opção "Confirm email". Lembre-se de reativar em produção!
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-header">
+                <h2 class="text-2xl font-bold">Passo 3: Integrando o Supabase ao Next.js</h2>
+            </div>
+            <div class="step-content">
+                <p class="text-gray-700 mb-4">
+                    Vamos conectar nosso app Next.js com o Supabase de forma segura usando variáveis de ambiente.
+                </p>
+                <p class="text-gray-700 mb-2">1. Instale a biblioteca do Supabase:</p>
+                <pre><code class="language-bash">npm install @supabase/supabase-js</code></pre>
+                <p class="text-gray-700 my-4">2. Crie um arquivo <code>.env.local</code> na raiz do seu projeto e adicione suas chaves:</p>
+                <pre><code class="language-plaintext"># .env.local
+
+NEXT_PUBLIC_SUPABASE_URL=SUA_PROJECT_URL_AQUI
+NEXT_PUBLIC_SUPABASE_ANON_KEY=SUA_ANON_KEY_AQUI</code></pre>
+                <p class="text-gray-700 my-4">3. Crie um cliente Supabase para ser usado no lado do cliente (browser). Crie o arquivo <code>lib/supabase/client.ts</code>:</p>
+                <pre><code class="language-typescript">// lib/supabase/client.ts
+import { createBrowserClient } from '@supabase/ssr'
+
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
+</code></pre>
+                 <p class="text-gray-700 my-4">4. Instale o pacote helper `@supabase/ssr` para facilitar a integração com Server Components e Middleware:</p>
+                 <pre><code class="language-bash">npm install @supabase/ssr</code></pre>
+            </div>
+        </div>
+        
+        <div class="step-card">
+            <div class="step-header">
+                <h2 class="text-2xl font-bold">Passo 4: Estrutura de Pastas e Páginas Iniciais</h2>
+            </div>
+            <div class="step-content">
+                <p class="text-gray-700 mb-4">
+                    Vamos organizar nosso projeto e criar as páginas essenciais. A estrutura dentro de <code>app/</code> definirá nossas rotas.
+                </p>
+                <ul class="list-disc list-inside text-gray-700 space-y-2">
+                    <li><code>app/page.tsx</code>: Nossa página <strong>Home</strong> (página inicial pública).</li>
+                    <li><code>app/login/page.tsx</code>: Página de <strong>Login</strong>.</li>
+                    <li><code>app/cadastro/page.tsx</code>: Página de <strong>Cadastro</strong>.</li>
+                    <li><code>app/dashboard/page.tsx</code>: Página de <strong>Dashboard</strong> (protegida).</li>
+                    <li><code>components/</code>: Pasta para componentes reutilizáveis (ex: Header, Input).</li>
+                    <li><code>store/</code>: Pasta para nosso estado global com Zustand.</li>
+                    <li><code>lib/</code>: Onde já criamos nosso cliente Supabase.</li>
+                </ul>
+                <p class="text-gray-700 mt-4">Crie arquivos básicos para cada página. Por enquanto, pode ser apenas um `h1` em cada um para confirmar que as rotas funcionam.</p>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-header">
+                <h2 class="text-2xl font-bold">Passo 5: Criando o Contexto de Usuário com Zustand</h2>
+            </div>
+            <div class="step-content">
+                <p class="text-gray-700 mb-4">
+                    Zustand é uma biblioteca leve e poderosa para gerenciamento de estado. Vamos usá-la para saber, em qualquer parte da aplicação, se o usuário está logado e quem ele é.
+                </p>
+                <p class="text-gray-700 mb-2">1. Instale o Zustand:</p>
+                <pre><code class="language-bash">npm install zustand</code></pre>
+                <p class="text-gray-700 my-4">2. Crie o "store" do usuário. Crie o arquivo <code>store/userStore.ts</code>:</p>
+                <pre><code class="language-typescript">// store/userStore.ts
+import { create } from 'zustand';
+import { User } from '@supabase/supabase-js';
+
+interface UserState {
+    user: User | null;
+    isLoading: boolean;
+    setUser: (user: User | null) => void;
+    setLoading: (isLoading: boolean) => void;
+}
+
+export const useUserStore = create<UserState>((set) => ({
+    user: null,
+    isLoading: true, // Começa como true para esperar a verificação inicial
+    setUser: (user) => set({ user, isLoading: false }),
+    setLoading: (isLoading) => set({ isLoading }),
+}));
+</code></pre>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-header">
+                <h2 class="text-2xl font-bold">Passo 6: Implementando a Lógica de Autenticação</h2>
+            </div>
+            <div class="step-content">
+                <p class="text-gray-700 mb-4">
+                    Agora vamos criar os formulários de Login/Cadastro e conectar suas funções com o Supabase Auth.
+                </p>
+                <p class="text-gray-700 mb-2"><strong>Exemplo para `app/cadastro/page.tsx`:</strong></p>
+                <pre><code class="language-typescript">'use client'; // Formulários são interativos, precisam ser Client Components
+
+import { useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
+
+export default function Cadastro() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const router = useRouter();
+    const supabase = createClient();
+
+    const handleSignUp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const { error } = await supabase.auth.signUp({
+            email,
+            password,
+        });
+
+        if (error) {
+            alert('Erro ao cadastrar: ' + error.message);
+        } else {
+            alert('Cadastro realizado! Verifique seu e-mail ou faça login.');
+            router.push('/login');
+        }
+    };
+
+    return (
+        <div className="flex justify-center items-center h-screen">
+            <form onSubmit={handleSignUp} className="p-8 bg-white shadow-md rounded-lg">
+                <h2 className="text-2xl font-bold mb-6">Cadastro</h2>
+                <input
+                    type="email"
+                    placeholder="Seu e-mail"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full p-2 mb-4 border rounded"
+                />
+                <input
+                    type="password"
+                    placeholder="Sua senha"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full p-2 mb-4 border rounded"
+                />
+                <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded">
+                    Cadastrar
+                </button>
+            </form>
+        </div>
+    );
+}</code></pre>
+                <p class="text-gray-700 my-4">
+                    A lógica para o <strong>Login</strong> é muito similar. Você usará a função <code>supabase.auth.signInWithPassword()</code> em vez de <code>signUp</code>. Após o login bem-sucedido, redirecione para o dashboard: <code>router.push('/dashboard')</code>.
+                </p>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-header">
+                <h2 class="text-2xl font-bold">Passo 7: Sincronizando o Estado de Auth com o Zustand</h2>
+            </div>
+            <div class="step-content">
+                <p class="text-gray-700 mb-4">
+                    Precisamos de um "ouvinte" global que atualize nosso store do Zustand sempre que o status de autenticação do Supabase mudar (login, logout). A melhor forma é fazer isso no layout principal da aplicação.
+                </p>
+                 <p class="text-gray-700 my-4">Modifique seu <code>app/layout.tsx</code> para incluir um componente cliente que faz essa sincronização.</p>
+                <pre><code class="language-typescript">// app/layout.tsx
+'use client'; // O listener precisa ser um client component
+
+import { useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { useUserStore } from '@/store/userStore';
+import './globals.css'; // Mantenha seus estilos globais
+
+// Este componente será o nosso "Auth Listener"
+function AuthProvider({ children }: { children: React.ReactNode }) {
+    const supabase = createClient();
+    const { setUser } = useUserStore();
+
+    useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+            (event, session) => {
+                // Quando o usuário loga, o session não é nulo.
+                // Quando desloga, o session é nulo.
+                setUser(session?.user ?? null);
+            }
+        );
+
+        // Limpa o listener quando o componente é desmontado
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [supabase, setUser]);
+
+    return <>{children}</>;
+}
+
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="pt-br">
+      <body>
+        <AuthProvider>
+            {children}
+        </AuthProvider>
+      </body>
+    </html>
+  );
+}
+</code></pre>
+                <p class="text-gray-700 my-4">
+                    <strong>Atenção:</strong> O código acima é um exemplo simplificado. O `RootLayout` em si não pode ser `'use client'`. A melhor prática é extrair o `AuthProvider` para seu próprio arquivo (ex: `components/AuthProvider.tsx`) e importá-lo no `layout.tsx`, envolvendo o `{children}`. O layout permanece como um Server Component.
+                </p>
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-header">
+                <h2 class="text-2xl font-bold">Passo 8: Protegendo Rotas com Middleware</h2>
+            </div>
+            <div class="step-content">
+                <p class="text-gray-700 mb-4">
+                    O Middleware é a forma moderna e eficiente no Next.js de proteger rotas. Ele executa no servidor antes da página ser renderizada. Vamos criar uma regra: somente usuários logados podem acessar <code>/dashboard</code>.
+                </p>
+                <p class="text-gray-700 mb-2">Crie o arquivo <code>middleware.ts</code> na raiz do seu projeto (no mesmo nível de <code>app/</code>).</p>
+                <pre><code class="language-typescript">// middleware.ts
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options) {
+          request.cookies.set({ name, value, ...options })
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          })
+          response.cookies.set({ name, value, ...options })
+        },
+        remove(name: string, options) {
+          request.cookies.set({ name, value: '', ...options })
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          })
+          response.cookies.set({ name, value: '', ...options })
+        },
+      },
+    }
+  )
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const { pathname } = request.nextUrl
+
+  // Se o usuário não estiver logado e tentar acessar o dashboard, redirecione para /login
+  if (!user && pathname === '/dashboard') {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // Se o usuário estiver logado e tentar acessar /login ou /cadastro, redirecione para /dashboard
+  if (user && (pathname === '/login' || pathname === '/cadastro')) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  return response
+}
+
+// Configura o middleware para rodar apenas nas rotas especificadas
+export const config = {
+  matcher: ['/dashboard', '/login', '/cadastro'],
+}
+</code></pre>
+            </div>
+        </div>
+        
+        <div class="step-card">
+            <div class="step-header">
+                <h2 class="text-2xl font-bold">Passo 9: Finalizando o Dashboard e o Logout</h2>
+            </div>
+            <div class="step-content">
+                <p class="text-gray-700 mb-4">
+                    No Dashboard, podemos agora acessar as informações do usuário salvas no store do Zustand e criar a função de logout.
+                </p>
+                <p class="text-gray-700 mb-2"><strong>Exemplo para `app/dashboard/page.tsx`:</strong></p>
+                <pre><code class="language-typescript">'use client';
+
+import { useUserStore } from '@/store/userStore';
+import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
+
+export default function Dashboard() {
+    const { user, isLoading } = useUserStore();
+    const router = useRouter();
+    const supabase = createClient();
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        // O onAuthStateChange irá limpar o store e o middleware redirecionará
+        router.push('/login'); 
+    };
+    
+    // Mostra um loader enquanto o estado de auth está sendo verificado
+    if (isLoading) {
+        return <div className="text-center p-10">Carregando...</div>
+    }
+
+    return (
+        <div className="p-8">
+            <h1 className="text-3xl font-bold">Dashboard</h1>
+            {user ? (
+                <div className="mt-4">
+                    <p>Bem-vindo, <strong className="text-blue-600">{user.email}</strong>!</p>
+                    <button 
+                        onClick={handleLogout}
+                        className="mt-6 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                    >
+                        Sair (Logout)
+                    </button>
+                </div>
+            ) : (
+                <p>Você não está logado.</p>
+            )}
+        </div>
+    );
+}</code></pre>
+            </div>
+        </div>
+
+        <footer class="text-center mt-10 mb-6">
+            <h3 class="text-2xl font-bold text-gray-800">Fluxo Completo</h3>
+            <p class="text-gray-600 mt-2 max-w-2xl mx-auto">
+                Com estes passos, você tem um fluxo de autenticação completo e robusto. O usuário pode se cadastrar, fazer login e ser redirecionado para um dashboard protegido. O estado global é gerenciado pelo Zustand, e a segurança das rotas é garantida pelo Middleware do Next.js. Este é um excelente ponto de partida para qualquer aplicação moderna.
+            </p>
+        </footer>
+
+    </div>
+</body>
+</html>
