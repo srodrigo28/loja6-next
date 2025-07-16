@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Interativo: Autenticação com Laravel</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    
+    <style>
+        /* Estilização da barra de rolagem */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        .dark ::-webkit-scrollbar-track { background: #2d3748; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        /* Estilo do link ativo na navegação lateral (Desktop) */
+        .sidebar-link.active {
+            color: #ef4444;
+            font-weight: 600;
+            border-left-color: #ef4444;
+        }
+        .dark .sidebar-link.active {
+            color: #f87171;
+            border-left-color: #f87171;
+        }
+        
+        /* Estilos para o Menu Mobile Sticky */
+        .mobile-menu-item .item-number {
+             transition: all 0.3s ease;
+        }
+        .mobile-menu-item.active .item-number {
+            background-color: #ef4444;
+            color: white;
+        }
+        .dark .mobile-menu-item.active .item-number {
+            background-color: #f87171;
+            color: #1e293b;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+    <button id="theme-toggle" class="fixed bottom-4 right-4 z-50 p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-md">
+        <svg id="theme-toggle-dark-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        <svg id="theme-toggle-light-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+    </button>
+
+    <div id="mobile-menu" class="lg:hidden fixed top-0 left-0 right-0 p-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-lg z-40">
+        <div id="mobile-menu-items" class="flex items-center space-x-2 overflow-x-auto pb-1">
+            </div>
+    </div>
+    
+    <div class="flex">
+        <aside class="fixed top-0 left-0 h-screen w-64 p-4 border-r border-slate-200 dark:border-slate-800 hidden lg:block">
+            <h2 class="text-xl font-bold mb-4">Índice Laravel</h2>
+            <nav>
+                <ol id="sidebar-nav" class="space-y-2">
+                    </ol>
+            </nav>
+        </aside>
+
+        <main class="w-full lg:ml-64 p-4 md:p-8 pt-20 lg:pt-8 pb-24">
+            <div class="max-w-4xl mx-auto">
+                <header class="mb-12">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white">Manual de Autenticação com Laravel</h1>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 mt-3">O guia prático para o fluxo de autenticação "out-of-the-box".</p>
+                </header>
+
+                <div id="manual-content" class="space-y-16">
+                    
+                    <section id="step-1" class="manual-section">
+                        <h2 data-title="Criação do Projeto" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 1: Ambiente e Criação do Projeto</h2>
+                        <p class="text-slate-600 dark:text-slate-400">O ecossistema Laravel depende do PHP e do Composer (gerenciador de pacotes). Com eles instalados, criar um novo projeto é um único comando.</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-bash">composer create-project laravel/laravel meu-app-laravel</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-2" class="manual-section">
+                        <h2 data-title="Banco de Dados" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 2: Configuração do Banco de Dados</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Laravel centraliza as configurações no arquivo <code>.env</code>. Antes de prosseguir, configure a conexão com seu banco de dados (MySQL, PostgreSQL, etc.).</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-ini"># .env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=meu_app_laravel
+DB_USERNAME=root
+DB_PASSWORD=
+</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-3" class="manual-section">
+                        <h2 data-title="A Mágica do Breeze" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 3: A Mágica do Laravel Breeze</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Esta é a etapa que simplifica tudo. O Laravel Breeze é um "starter kit" que gera todo o sistema de autenticação para você com alguns comandos.</p>
+                        <p class="mt-4">1. Instale o Breeze via Composer:</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-bash">composer require laravel/breeze --dev</code></pre>
+                        </div>
+                        <p class="mt-4">2. Rode o comando de instalação. Ele perguntará qual front-end você prefere (Blade, React ou Vue). Para o exemplo mais simples, escolha <strong class="text-red-500">Blade</strong>.</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-bash">php artisan breeze:install</code></pre>
+                        </div>
+                        <div class="mt-4 p-4 bg-red-50 dark:bg-slate-800 border-l-4 border-red-400 dark:border-red-500 rounded">
+                           <p class="font-semibold text-red-800 dark:text-red-300">O que acabou de acontecer?</p>
+                           <p class="text-sm text-red-700 dark:text-red-400">O Breeze gerou automaticamente todas as rotas, controllers (lógica PHP) e views (HTML Blade) para login, registro, recuperação de senha, e um dashboard.</p>
+                        </div>
+                    </section>
+                    
+                    <section id="step-4" class="manual-section">
+                        <h2 data-title="Criando as Tabelas" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 4: Executando as Migrations</h2>
+                        <p class="text-slate-600 dark:text-slate-400">O Breeze também criou os arquivos de "migration", que são como um controle de versão para seu banco de dados. O comando abaixo lê esses arquivos e cria as tabelas necessárias (como a tabela `users`).</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-bash">php artisan migrate</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-5" class="manual-section">
+                        <h2 data-title="Analisando a Estrutura" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 5: Analisando a Estrutura Gerada</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Dê uma olhada nos arquivos que o Breeze criou para entender a arquitetura MVC do Laravel:</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-plaintext">/
+├── app/
+│   └── Http/
+│       └── Controllers/
+│           └── Auth/
+│               ├── AuthenticatedSessionController.php (Lógica de Login/Logout)
+│               └── RegisteredUserController.php (Lógica de Registro)
+├── resources/
+│   └── views/
+│       ├── auth/ (Views de Login, Registro, etc.)
+│       │   ├── login.blade.php
+│       │   └── register.blade.php
+│       └── dashboard.blade.php (A página protegida)
+└── routes/
+    └── auth.php (Onde as rotas de autenticação foram definidas)
+</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-6" class="manual-section">
+                        <h2 data-title="Proteção de Rotas" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 6: Como a Proteção de Rotas Funciona</h2>
+                        <p class="text-slate-600 dark:text-slate-400">A rota do dashboard já foi protegida automaticamente. No arquivo de rotas, você verá o uso do middleware `auth`.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 routes/web.php</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-php">use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
+
+// ...
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard'); // <-- AQUI!
+
+// ...
+require __DIR__.'/auth.php';
+</code></pre>
+                            <p class="text-sm mt-2">Qualquer rota com `->middleware('auth')` exigirá que o usuário esteja logado. Se não estiver, o Laravel o redirecionará automaticamente para a página de login.</p>
+                        </div>
+                    </section>
+
+                    <section id="step-7" class="manual-section">
+                        <h2 data-title="Acessando o Usuário" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 7: Acessando o Usuário Logado</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Diferente dos frameworks JS, onde precisamos de um estado global no cliente, no Laravel o estado do usuário vive na sessão do servidor. Acessá-lo é trivial.</p>
+                        <p class="mt-4 font-bold">Em um arquivo Blade (HTML):</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-php">
+&lt;div&gt;
+    Olá, {{ Auth::user()->name }}!
+&lt;/div&gt;
+</code></pre>
+                        </div>
+                         <p class="mt-4 font-bold">Em um Controller (PHP):</p>
+                         <div class="code-container relative mt-4">
+                            <pre><code class="language-php">use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+public function show(Request $request)
+{
+    $user = Auth::user(); // Pega o usuário logado
+    $userFromRequest = $request->user(); // Alternativa
+
+    // ...
+}</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-8" class="manual-section">
+                        <h2 data-title="Rodando a Aplicação" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 8: Rodando a Aplicação</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Para rodar um projeto Laravel moderno, você precisa de dois processos em terminais separados:</p>
+                        <p class="mt-4">1. O servidor PHP do Laravel:</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-bash">php artisan serve</code></pre>
+                        </div>
+                        <p class="mt-4">2. O servidor de desenvolvimento Vite (para compilar CSS e JS):</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-bash">npm run dev</code></pre>
+                        </div>
+                        <p class="mt-4">Após iniciar ambos, sua aplicação estará rodando, geralmente em `http://127.0.0.1:8000`. Você pode visitar `/register` para criar uma conta e testar todo o fluxo.</p>
+                    </section>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. INICIALIZAR DESTAQUE DE SINTAXE
+            hljs.highlightAll();
+            
+            // 2. LÓGICA DO TEMA ESCURO
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const darkIcon = document.getElementById('theme-toggle-dark-icon');
+            const lightIcon = document.getElementById('theme-toggle-light-icon');
+            const applyTheme = (theme) => {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                    darkIcon.classList.add('hidden');
+                    lightIcon.classList.remove('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    lightIcon.classList.add('hidden');
+                    darkIcon.classList.remove('hidden');
+                }
+            };
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+            themeToggleBtn.addEventListener('click', () => {
+                const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
+
+            // 3. SETUP DOS ELEMENTOS DE NAVEGAÇÃO
+            const sections = document.querySelectorAll('.manual-section');
+            const sidebarNav = document.getElementById('sidebar-nav');
+            const mobileMenu = document.getElementById('mobile-menu-items');
+
+            sections.forEach((section, index) => {
+                const id = section.id;
+                const title = section.querySelector('h2').dataset.title;
+                const step = index + 1;
+
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = `#${id}`;
+                a.textContent = `${step}. ${title}`;
+                a.className = 'sidebar-link block border-l-2 border-transparent pl-4 py-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors';
+                if (sidebarNav) sidebarNav.appendChild(li);
+
+                const mobileLink = document.createElement('a');
+                mobileLink.href = `#${id}`;
+                mobileLink.className = 'mobile-menu-item flex-shrink-0 flex items-center p-1 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300 ease-in-out';
+                mobileLink.innerHTML = `
+                    <span class="item-number flex items-center justify-center h-8 w-8 rounded-full font-bold text-slate-600 dark:text-slate-300">${step}</span>
+                    <span class="item-title hidden ml-2 mr-2 font-semibold whitespace-nowrap text-sm">${title}</span>
+                `;
+                if (mobileMenu) mobileMenu.appendChild(mobileLink);
+
+                [a, mobileLink].forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const headerOffset = 80;
+                        const elementPosition = section.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        
+                        window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+                        
+                        if (window.innerWidth < 1024) {
+                            document.querySelectorAll('.mobile-menu-item').forEach(item => {
+                                item.classList.remove('expanded', 'bg-red-100', 'dark:bg-red-900');
+                                item.querySelector('.item-title').classList.add('hidden');
+                            });
+                            mobileLink.classList.add('expanded', 'bg-red-100', 'dark:bg-red-900');
+                            mobileLink.querySelector('.item-title').classList.remove('hidden');
+                        }
+                    });
+                });
+            });
+
+            // 4. ADICIONAR BOTÕES DE "COPIAR"
+            document.querySelectorAll('.code-container pre').forEach(pre => {
+                const btn = document.createElement('button');
+                btn.textContent = 'Copiar';
+                btn.className = 'absolute top-2 right-2 px-2 py-1 text-xs rounded bg-slate-600 text-white hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-800 transition-colors opacity-50 hover:opacity-100';
+                pre.parentNode.insertBefore(btn, pre);
+                btn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(pre.querySelector('code').innerText).then(() => {
+                        btn.textContent = 'Copiado!';
+                        setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+                    });
+                });
+            });
+
+            // 5. SCROLLSPY OBSERVER
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const id = entry.target.getAttribute('id');
+                    const sidebarLink = document.querySelector(`.sidebar-link[href="#${id}"]`);
+                    const mobileItem = document.querySelector(`.mobile-menu-item[href="#${id}"]`);
+                    
+                    if (entry.isIntersecting) {
+                        document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                        if (sidebarLink) sidebarLink.classList.add('active');
+                        
+                        document.querySelectorAll('.mobile-menu-item').forEach(i => i.classList.remove('active'));
+                        if (mobileItem) mobileItem.classList.add('active');
+                        
+                        if(mobileItem && !mobileItem.classList.contains('expanded')) {
+                           mobileItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                        }
+                    }
+                });
+            }, { rootMargin: "-20% 0px -80% 0px" });
+
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+</body>
+</html>

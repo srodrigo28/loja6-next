@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Completo: Autenticação com Nuxt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <style>
+        /* Cor de destaque: Verde (Nuxt) */
+        .sidebar-link.active { color: #00dc82; font-weight: 600; border-left-color: #00dc82; }
+        .dark .sidebar-link.active { color: #00dc82; border-left-color: #00dc82; }
+        .mobile-menu-item.active .item-number { background-color: #00dc82; color: white; }
+        .dark .mobile-menu-item.active .item-number { background-color: #00dc82; color: #1e293b; }
+        .mobile-menu-item.expanded { background-color: #e6fcf5; } /* Verde claro */
+        .dark .mobile-menu-item.expanded { background-color: #003c24; } /* Verde escuro */
+        /* Outros estilos ... */
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #f1f1f1; } .dark ::-webkit-scrollbar-track { background: #2d3748; } ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: #555; } .mobile-menu-item .item-number { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+    <button id="theme-toggle" class="fixed bottom-4 right-4 z-50 p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-md">
+        <svg id="theme-toggle-dark-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        <svg id="theme-toggle-light-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+    </button>
+    <div id="mobile-menu" class="lg:hidden fixed top-0 left-0 right-0 p-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-lg z-40"><div id="mobile-menu-items" class="flex items-center space-x-2 overflow-x-auto pb-1"></div></div>
+    <div class="flex">
+        <aside class="fixed top-0 left-0 h-screen w-64 p-4 border-r border-slate-200 dark:border-slate-800 hidden lg:block"><h2 class="text-xl font-bold mb-4">Índice Nuxt</h2><nav><ol id="sidebar-nav" class="space-y-2"></ol></nav></aside>
+        <main class="w-full lg:ml-64 p-4 md:p-8 pt-20 lg:pt-8 pb-24">
+            <div class="max-w-4xl mx-auto">
+                <header class="mb-12"><h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white">Manual: Autenticação com Nuxt</h1><p class="text-lg text-slate-600 dark:text-slate-400 mt-3">O guia completo com o módulo @nuxtjs/supabase.</p></header>
+                <div id="manual-content" class="space-y-16">
+                    
+                    <section id="step-1" class="manual-section">
+                        <h2 data-title="Criação do Projeto" class="text-3xl font-bold border-b ...">Passo 1: Criação do Projeto</h2>
+                        <p>Inicie um projeto Nuxt 3 e instale o módulo oficial do Supabase. O módulo cuidará de grande parte da configuração para nós.</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-bash"># 1. Crie o projeto
+npx nuxi@latest init meu-app-nuxt
+
+# 2. Entre na pasta
+cd meu-app-nuxt
+
+# 3. Instale o módulo Supabase
+npm install @nuxtjs/supabase --save-dev</code></pre></div>
+                    </section>
+
+                    <section id="step-2" class="manual-section">
+                        <h2 data-title="Configuração do Módulo" class="text-3xl font-bold border-b ...">Passo 2: Configuração do Módulo</h2>
+                        <p>A configuração é feita de forma centralizada no arquivo <code>nuxt.config.ts</code>. Adicione o módulo e suas chaves do Supabase.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 nuxt.config.ts</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-typescript">export default defineNuxtConfig({
+  modules: [
+    '@nuxtjs/supabase'
+  ],
+  supabase: {
+    // URL do seu projeto Supabase
+    url: 'SUA_PROJECT_URL_AQUI',
+    // Chave ANÔNIMA PÚBLICA do seu projeto
+    key: 'SUA_ANON_KEY_AQUI',
+    
+    // Opções de redirecionamento
+    redirectOptions: {
+      login: '/login', // Para onde redirecionar se o usuário não estiver logado
+      callback: '/confirm', // Rota de confirmação de email
+      exclude: ['/register'], // Rotas que não precisam de autenticação
+    }
+  }
+})</code></pre></div>
+                    </section>
+
+                    <section id="step-3" class="manual-section">
+                        <h2 data-title="Middleware de Proteção" class="text-3xl font-bold border-b ...">Passo 3: Middlewares de Proteção</h2>
+                        <p>Middlewares são a forma do Nuxt de proteger rotas. Vamos criar dois: um para rotas que exigem login (`auth`) e outro para rotas que só podem ser vistas por visitantes (`guest`).</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 middleware/auth.ts</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-typescript">// Este middleware verifica se o usuário ESTÁ logado.
+export default defineNuxtRouteMiddleware((to, from) => {
+  const user = useSupabaseUser();
+
+  if (!user.value) {
+    // Se não há usuário, o módulo Supabase já redireciona para /login
+    // mas podemos adicionar uma lógica extra se quisermos.
+    // Este middleware é aplicado nas páginas que precisam de login.
+    return navigateTo('/login');
+  }
+});</code></pre></div>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 middleware/guest.ts</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-typescript">// Este middleware verifica se o usuário NÃO está logado.
+export default defineNuxtRouteMiddleware((to, from) => {
+  const user = useSupabaseUser();
+
+  if (user.value) {
+    // Se o usuário já está logado, ele não deve ver a página de login.
+    // Redirecionamos para o dashboard.
+    return navigateTo('/dashboard');
+  }
+});</code></pre></div>
+                    </section>
+                    
+                     <section id="step-4" class="manual-section">
+                        <h2 data-title="Páginas de Roteamento" class="text-3xl font-bold border-b ...">Passo 4: Estrutura das Páginas</h2>
+                        <p>O Nuxt usa roteamento baseado em arquivos na pasta <code>pages/</code>. Crie esta estrutura para as nossas rotas.</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-plaintext">/
+└── pages/
+    ├── login.vue
+    ├── register.vue
+    └── dashboard.vue
+</code></pre></div>
+                    </section>
+
+                    <section id="step-5" class="manual-section">
+                        <h2 data-title="Página de Login" class="text-3xl font-bold border-b ...">Passo 5: Página de Login</h2>
+                        <p>Esta página conterá o formulário de login e aplicará o middleware `guest`.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 pages/login.vue</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-vue">&lt;template&gt;
+  &lt;div class="flex justify-center items-center min-h-screen"&gt;
+    &lt;form @submit.prevent="handleLogin" class="p-8 bg-white rounded shadow-md w-96"&gt;
+      &lt;h2 class="text-2xl font-bold mb-6"&gt;Login&lt;/h2&gt;
+      &lt;div class="mb-4"&gt;
+        &lt;input type="email" v-model="email" placeholder="Email" class="w-full p-2 border rounded" /&gt;
+      &lt;/div&gt;
+      &lt;div class="mb-6"&gt;
+        &lt;input type="password" v-model="password" placeholder="Senha" class="w-full p-2 border rounded" /&gt;
+      &lt;/div&gt;
+      &lt;button type="submit" class="w-full bg-green-500 text-white p-2 rounded"&gt;Entrar&lt;/button&gt;
+      &lt;p v-if="errorMsg" class="text-red-500 mt-2"&gt;{{ errorMsg }}&lt;/p&gt;
+    &lt;/form&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+definePageMeta({ middleware: 'guest' });
+
+const email = ref('');
+const password = ref('');
+const errorMsg = ref(null);
+const client = useSupabaseClient();
+const router = useRouter();
+
+async function handleLogin() {
+  try {
+    const { error } = await client.auth.signInWithPassword({
+      email: email.value,
+      password: password.value,
+    });
+    if (error) throw error;
+    router.push('/dashboard');
+  } catch (error) {
+    errorMsg.value = error.message;
+  }
+}
+&lt;/script&gt;</code></pre></div>
+                    </section>
+
+                    <section id="step-6" class="manual-section">
+                        <h2 data-title="Página de Dashboard" class="text-3xl font-bold border-b ...">Passo 6: Página de Dashboard</h2>
+                        <p>A página protegida que só usuários logados podem ver. Aplicamos o middleware `auth`.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 pages/dashboard.vue</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-vue">&lt;template&gt;
+  &lt;div class="p-8 text-center"&gt;
+    &lt;h1 class="text-3xl font-bold"&gt;Dashboard&lt;/h1&gt;
+    &lt;div v-if="user" class="mt-4"&gt;
+      &lt;p&gt;Bem-vindo, &lt;strong class="text-green-500"&gt;{{ user.email }}&lt;/strong&gt;!&lt;/p&gt;
+      &lt;button @click="handleLogout" class="mt-6 bg-red-500 text-white py-2 px-4 rounded"&gt;Sair&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+definePageMeta({ middleware: 'auth' });
+
+const user = useSupabaseUser();
+const client = useSupabaseClient();
+const router = useRouter();
+
+const handleLogout = async () => {
+  const { error } = await client.auth.signOut();
+  if (error) console.log(error);
+  else router.push('/login');
+};
+&lt;/script&gt;</code></pre></div>
+                    </section>
+                    
+                    <section id="step-7" class="manual-section">
+                        <h2 data-title="Layout Principal" class="text-3xl font-bold border-b ...">Passo 7: Layout Principal da Aplicação</h2>
+                        <p>O arquivo <code>app.vue</code> é o ponto de entrada da sua aplicação. Ele renderiza a página da rota atual.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 app.vue</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-vue">&lt;template&gt;
+  &lt;div&gt;
+    &lt;NuxtPage /&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre></div>
+                    </section>
+
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            hljs.highlightAll();
+            const themeToggleBtn = document.getElementById('theme-toggle'),darkIcon = document.getElementById('theme-toggle-dark-icon'),lightIcon = document.getElementById('theme-toggle-light-icon');const applyTheme = (e) => {"dark" === e ? (document.documentElement.classList.add("dark"), darkIcon.classList.add("hidden"), lightIcon.classList.remove("hidden")) : (document.documentElement.classList.remove("dark"), lightIcon.classList.add("hidden"), darkIcon.classList.remove("hidden"))};const savedTheme = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");applyTheme(savedTheme),themeToggleBtn.addEventListener("click", () => {const e = document.documentElement.classList.contains("dark") ? "light" : "dark";localStorage.setItem("theme", e), applyTheme(e)});const sections = document.querySelectorAll(".manual-section"),sidebarNav = document.getElementById("sidebar-nav"),mobileMenu = document.getElementById("mobile-menu-items");sections.forEach((e, t) => {const o = e.id,l = e.querySelector("h2").dataset.title,d = t + 1;const c = document.createElement("li"),s = document.createElement("a");s.href = `#${o}`, s.textContent = `${d}. ${l}`, s.className = "sidebar-link block border-l-2 border-transparent pl-4 py-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors", sidebarNav && sidebarNav.appendChild(c.appendChild(s));const n = document.createElement("a");n.href = `#${o}`, n.className = "mobile-menu-item flex-shrink-0 flex items-center p-1 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300 ease-in-out", n.innerHTML = `<span class="item-number flex items-center justify-center h-8 w-8 rounded-full font-bold text-slate-600 dark:text-slate-300">${d}</span><span class="item-title hidden ml-2 mr-2 font-semibold whitespace-nowrap text-sm">${l}</span>`, mobileMenu && mobileMenu.appendChild(n), [s, n].forEach(t => {t.addEventListener("click", t => {t.preventDefault();const o = 80,l = e.getBoundingClientRect().top,d = l + window.pageYOffset - 80;window.scrollTo({top: d,behavior: "smooth"}), window.innerWidth < 1024 && (document.querySelectorAll(".mobile-menu-item").forEach(e => {e.classList.remove("expanded", "bg-green-100", "dark:bg-green-900"), e.querySelector(".item-title").classList.add("hidden")}), n.classList.add("expanded", "bg-green-100", "dark:bg-green-900"), n.querySelector(".item-title").classList.remove("hidden"))})})}), document.querySelectorAll(".code-container pre").forEach(e => {const t = document.createElement("button");t.textContent = "Copiar", t.className = "absolute top-2 right-2 px-2 py-1 text-xs rounded bg-slate-600 text-white hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-800 transition-colors opacity-50 hover:opacity-100", e.parentNode.insertBefore(t, e), t.addEventListener("click", () => {navigator.clipboard.writeText(e.querySelector("code").innerText).then(() => {t.textContent = "Copiado!", setTimeout(() => {t.textContent = "Copiar"}, 2e3)})})});const observer = new IntersectionObserver(e => {e.forEach(e => {if (e.isIntersecting) {const t = e.target.getAttribute("id"),o = document.querySelector(`.sidebar-link[href="#${t}"]`),l = document.querySelector(`.mobile-menu-item[href="#${t}"]`);document.querySelectorAll(".sidebar-link").forEach(e => e.classList.remove("active")), o && o.classList.add("active"), document.querySelectorAll(".mobile-menu-item").forEach(e => e.classList.remove("active")), l && l.classList.add("active"), l && !l.classList.contains("expanded") && l.scrollIntoView({behavior: "smooth",block: "nearest",inline: "center"})}})}, {rootMargin: "-20% 0px -80% 0px"});sections.forEach(e => observer.observe(e))
+        });
+    </script>
+</body>
+</html>

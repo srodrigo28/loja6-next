@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Completo e Funcional: Autenticação com Angular</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <style>
+        /* Estilização da barra de rolagem */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        .dark ::-webkit-scrollbar-track { background: #2d3748; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        /* Cor de destaque: Vermelho (Angular) */
+        .sidebar-link.active {
+            color: #DD0031;
+            font-weight: 600;
+            border-left-color: #DD0031;
+        }
+        .dark .sidebar-link.active {
+            color: #f06292;
+            border-left-color: #f06292;
+        }
+        
+        .mobile-menu-item .item-number {
+             transition: all 0.3s ease;
+        }
+        .mobile-menu-item.active .item-number {
+            background-color: #DD0031;
+            color: white;
+        }
+        .dark .mobile-menu-item.active .item-number {
+            background-color: #f06292;
+            color: #1e293b;
+        }
+        .mobile-menu-item.expanded {
+            background-color: #fce4ec; /* Vermelho bem claro */
+        }
+        .dark .mobile-menu-item.expanded {
+            background-color: #880e4f; /* Vermelho bem escuro */
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+    <button id="theme-toggle" class="fixed bottom-4 right-4 z-50 p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-md">
+        <svg id="theme-toggle-dark-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        <svg id="theme-toggle-light-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+    </button>
+    
+    <div id="mobile-menu" class="lg:hidden fixed top-0 left-0 right-0 p-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-lg z-40">
+        <div id="mobile-menu-items" class="flex items-center space-x-2 overflow-x-auto pb-1">
+            </div>
+    </div>
+    
+    <div class="flex">
+        <aside class="fixed top-0 left-0 h-screen w-64 p-4 border-r border-slate-200 dark:border-slate-800 hidden lg:block">
+            <h2 class="text-xl font-bold mb-4">Índice Angular</h2>
+            <nav>
+                <ol id="sidebar-nav" class="space-y-2">
+                    </ol>
+            </nav>
+        </aside>
+
+        <main class="w-full lg:ml-64 p-4 md:p-8 pt-20 lg:pt-8 pb-24">
+            <div class="max-w-4xl mx-auto">
+                <header class="mb-12">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white">Manual: Autenticação com Angular</h1>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 mt-3">O guia com Services, RxJS e Functional Guards.</p>
+                </header>
+                <div id="manual-content" class="space-y-16">
+                    
+                    <section id="step-1" class="manual-section">
+                        <h2 data-title="Criação do Projeto" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 1: Criação do Projeto Angular</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Usamos o Angular CLI para criar um novo projeto com a arquitetura moderna (standalone) e instalamos a biblioteca do Supabase.</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-bash"># 1. Crie o projeto (selecione CSS)
+ng new meu-app-angular --standalone --routing
+
+# 2. Entre na pasta
+cd meu-app-angular
+
+# 3. Instale o cliente Supabase
+npm install @supabase/supabase-js</code></pre></div>
+                    </section>
+
+                    <section id="step-2" class="manual-section">
+                        <h2 data-title="Variáveis de Ambiente" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 2: Configurando o Ambiente</h2>
+                        <p class="text-slate-600 dark:text-slate-400">No Angular, as variáveis de ambiente são gerenciadas nos arquivos <code>environment.ts</code>.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 src/environments/environment.ts</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-typescript">export const environment = {
+  production: false,
+  supabaseUrl: 'SUA_PROJECT_URL_AQUI',
+  supabaseKey: 'SUA_ANON_KEY_AQUI',
+};</code></pre></div>
+                    </section>
+
+                    <section id="step-3" class="manual-section">
+                        <h2 data-title="Serviço Central" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 3: O Serviço Central (`SupabaseService`)</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Esta é a peça mais importante. Um serviço singleton que gerencia o cliente Supabase e o estado do usuário com um `BehaviorSubject` do RxJS, tornando o estado do usuário reativo e disponível em toda a aplicação.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 src/app/core/services/supabase.service.ts</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-typescript">import { Injectable } from '@angular/core';
+import { createClient, SupabaseClient, User, AuthChangeEvent, Session } from '@supabase/supabase-js';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
+
+@Injectable({ providedIn: 'root' })
+export class SupabaseService {
+  private supabase: SupabaseClient;
+  private currentUser = new BehaviorSubject<User | null>(null);
+  
+  public currentUser$: Observable<User | null> = this.currentUser.asObservable();
+
+  constructor() {
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+
+    this.supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
+      this.currentUser.next(session?.user ?? null);
+    });
+  }
+  
+  signInWithPassword(credentials: { email, password }) {
+    return this.supabase.auth.signInWithPassword(credentials);
+  }
+
+  signUp(credentials: { email, password }) {
+    return this.supabase.auth.signUp(credentials);
+  }
+
+  signOut() {
+    return this.supabase.auth.signOut();
+  }
+}</code></pre></div>
+                    </section>
+                    
+                     <section id="step-4" class="manual-section">
+                        <h2 data-title="Route Guards" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 4: Functional Route Guards</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Guards protegem nossas rotas. Criamos uma função `authGuard` que só permite o acesso se o usuário estiver logado. Este é o equivalente do Middleware no Next.js.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 src/app/core/guards/auth.guard.ts</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-typescript">import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { SupabaseService } from '../services/supabase.service';
+import { map, take } from 'rxjs/operators';
+
+export const authGuard: CanActivateFn = (route, state) => {
+  const supabaseService = inject(SupabaseService);
+  const router = inject(Router);
+
+  return supabaseService.currentUser$.pipe(
+    take(1), // Pega o valor atual e finaliza a inscrição
+    map(user => {
+      if (user) {
+        return true; // Usuário logado, acesso permitido
+      }
+      // Usuário não logado, redireciona para a página de login
+      return router.createUrlTree(['/login']);
+    })
+  );
+};</code></pre></div>
+                    </section>
+
+                    <section id="step-5" class="manual-section">
+                        <h2 data-title="Configurando Rotas" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 5: Configurando as Rotas</h2>
+                        <p class="text-slate-600 dark:text-slate-400">No arquivo `app.routes.ts`, definimos nossas páginas usando lazy-loading (`loadComponent`) e aplicamos o `authGuard` na rota do dashboard para protegê-la.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 src/app/app.routes.ts</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-typescript">import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+
+export const routes: Routes = [
+  {
+    path: 'login',
+    loadComponent: () => import('./auth/login/login.component').then(c => c.LoginComponent),
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./auth/register/register.component').then(c => c.RegisterComponent),
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/dashboard.component').then(c => c.DashboardComponent),
+    canActivate: [authGuard], // <-- Rota protegida!
+  },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+];</code></pre></div>
+                    </section>
+
+                    <section id="step-6" class="manual-section">
+                        <h2 data-title="Componente de Login" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 6: Componente de Login</h2>
+                        <p class="text-slate-600 dark:text-slate-400">O componente de login utiliza o `ReactiveFormsModule` do Angular para criar um formulário robusto e injeta o `SupabaseService` para executar a autenticação.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 src/app/auth/login/login.component.ts</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-typescript">import { Component, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { SupabaseService } from '../../core/services/supabase.service';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [ReactiveFormsModule, RouterLink],
+  templateUrl: './login.component.html'
+})
+export class LoginComponent {
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private supabaseService = inject(SupabaseService);
+
+  loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required]],
+  });
+
+  async onSubmit(): Promise<void> {
+    if (this.loginForm.valid) {
+      const { email, password } = this.loginForm.value;
+      const { error } = await this.supabaseService.signInWithPassword({ email, password });
+      if (error) {
+        alert(error.message);
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
+    }
+  }
+}</code></pre></div>
+                    </section>
+                    
+                    <section id="step-7" class="manual-section">
+                        <h2 data-title="Componente do Dashboard" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 7: Componente do Dashboard</h2>
+                        <p class="text-slate-600 dark:text-slate-400">A página do dashboard usa o `async` pipe para se "inscrever" no estado do usuário do nosso serviço. Isso exibe os dados do usuário de forma reativa e segura.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 src/app/dashboard/dashboard.component.ts</p>
+                        <div class="code-container relative mt-4"><pre><code class="language-typescript">import { Component, inject } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { SupabaseService } from '../../core/services/supabase.service';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [AsyncPipe],
+  templateUrl: './dashboard.component.html'
+})
+export class DashboardComponent {
+  private router = inject(Router);
+  public supabaseService = inject(SupabaseService);
+
+  async handleLogout(): Promise<void> {
+    await this.supabaseService.signOut();
+    this.router.navigate(['/login']);
+  }
+}</code></pre></div>
+<p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 src/app/dashboard/dashboard.component.html</p>
+<div class="code-container relative mt-4"><pre><code class="language-html">&lt;div class="p-8 text-center"&gt;
+  &lt;!-- O 'async' pipe resolve o Observable para nós e lida com a inscrição --&gt;
+  &lt;ng-container *ngIf="supabaseService.currentUser$ | async as user"&gt;
+    &lt;h1 class="text-3xl"&gt;Bem-vindo, &lt;strong class="text-red-500"&gt;{{ user.email }}&lt;/strong&gt;!&lt;/h1&gt;
+    &lt;button (click)="handleLogout()" class="mt-6 bg-slate-600 text-white py-2 px-4 rounded"&gt;Sair&lt;/button&gt;
+  &lt;/ng-container&gt;
+&lt;/div&gt;</code></pre></div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            hljs.highlightAll();
+            const themeToggleBtn = document.getElementById('theme-toggle'),darkIcon = document.getElementById('theme-toggle-dark-icon'),lightIcon = document.getElementById('theme-toggle-light-icon');const applyTheme = (e) => {"dark" === e ? (document.documentElement.classList.add("dark"), darkIcon.classList.add("hidden"), lightIcon.classList.remove("hidden")) : (document.documentElement.classList.remove("dark"), lightIcon.classList.add("hidden"), darkIcon.classList.remove("hidden"))};const savedTheme = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");applyTheme(savedTheme),themeToggleBtn.addEventListener("click", () => {const e = document.documentElement.classList.contains("dark") ? "light" : "dark";localStorage.setItem("theme", e), applyTheme(e)});const sections = document.querySelectorAll(".manual-section"),sidebarNav = document.getElementById("sidebar-nav"),mobileMenu = document.getElementById("mobile-menu-items");sections.forEach((e, t) => {const o = e.id,l = e.querySelector("h2").dataset.title,d = t + 1;const c = document.createElement("li"),s = document.createElement("a");s.href = `#${o}`, s.textContent = `${d}. ${l}`, s.className = "sidebar-link block border-l-2 border-transparent pl-4 py-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors", sidebarNav && sidebarNav.appendChild(c.appendChild(s));const n = document.createElement("a");n.href = `#${o}`, n.className = "mobile-menu-item flex-shrink-0 flex items-center p-1 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300 ease-in-out", n.innerHTML = `<span class="item-number flex items-center justify-center h-8 w-8 rounded-full font-bold text-slate-600 dark:text-slate-300">${d}</span><span class="item-title hidden ml-2 mr-2 font-semibold whitespace-nowrap text-sm">${l}</span>`, mobileMenu && mobileMenu.appendChild(n), [s, n].forEach(t => {t.addEventListener("click", t => {t.preventDefault();const o = 80,l = e.getBoundingClientRect().top,d = l + window.pageYOffset - 80;window.scrollTo({top: d,behavior: "smooth"}), window.innerWidth < 1024 && (document.querySelectorAll(".mobile-menu-item").forEach(e => {e.classList.remove("expanded", "bg-red-100", "dark:bg-red-900"), e.querySelector(".item-title").classList.add("hidden")}), n.classList.add("expanded", "bg-red-100", "dark:bg-red-900"), n.querySelector(".item-title").classList.remove("hidden"))})})}), document.querySelectorAll(".code-container pre").forEach(e => {const t = document.createElement("button");t.textContent = "Copiar", t.className = "absolute top-2 right-2 px-2 py-1 text-xs rounded bg-slate-600 text-white hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-800 transition-colors opacity-50 hover:opacity-100", e.parentNode.insertBefore(t, e), t.addEventListener("click", () => {navigator.clipboard.writeText(e.querySelector("code").innerText).then(() => {t.textContent = "Copiado!", setTimeout(() => {t.textContent = "Copiar"}, 2e3)})})});const observer = new IntersectionObserver(e => {e.forEach(e => {if (e.isIntersecting) {const t = e.target.getAttribute("id"),o = document.querySelector(`.sidebar-link[href="#${t}"]`),l = document.querySelector(`.mobile-menu-item[href="#${t}"]`);document.querySelectorAll(".sidebar-link").forEach(e => e.classList.remove("active")), o && o.classList.add("active"), document.querySelectorAll(".mobile-menu-item").forEach(e => e.classList.remove("active")), l && l.classList.add("active"), l && !l.classList.contains("expanded") && l.scrollIntoView({behavior: "smooth",block: "nearest",inline: "center"})}})}, {rootMargin: "-20% 0px -80% 0px"});sections.forEach(e => observer.observe(e))
+        });
+    </script>
+</body>
+</html>
