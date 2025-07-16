@@ -179,9 +179,17 @@ export default function HomePage() {
           </div>
           <div>
             <h4 className="font-semibold mb-2">Links úteis</h4>
-            <Link href="/doc.html" className="text-blue-600 hover:underline">
-              📄 Documentação
-            </Link>
+            <div className='flex flex-col'>
+              <Link href="/next-v8.html" className="text-blue-600 hover:underline">
+              📄 NextJS Typescript
+              </Link>
+              <Link href="/doc.html" className="text-blue-600 hover:underline">
+              📄 Supabase Banco
+              </Link>
+              <Link href="/angular.html" className="text-blue-600 hover:underline">
+              📄 Angular +17
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
