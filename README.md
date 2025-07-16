@@ -4,8 +4,8 @@
 <img src="./preview/home.png" alt="">
 
 
-* > Dashboard 01
-<img src="./preview/dashboard.png" alt="">
+* > Home Item
+<img src="./preview/home-item.png" alt="">
 
 * > Doc
 <img src="./preview/doc.png" alt="">
