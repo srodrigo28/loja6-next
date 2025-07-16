@@ -17,7 +17,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Minha Loja",
-  description: "Marketplace moderno com Supabase e Next.js",
+  description: "Treina-Dev Treinamentos",
 }
 
 export default function RootLayout({
