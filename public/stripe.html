@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Manual de Integração - Supabase + Stripe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 leading-relaxed">
+  <div class="max-w-4xl mx-auto px-6 py-10 bg-white shadow-md rounded-lg mt-10">
+    <h1 class="text-3xl font-bold text-blue-600 mb-6">🎯 Plataforma de Sorteios Diários - Manual de Integração</h1>
+
+    <p class="mb-4">Este guia irá te ajudar a configurar sua plataforma com <strong>Supabase</strong> e <strong>Stripe</strong>, deixando tudo pronto para funcionar em produção ou testes.</p>
+
+    <hr class="my-6" />
+
+    <h2 class="text-2xl font-semibold text-gray-800 mb-3">✅ PRÉ-REQUISITOS</h2>
+    <ul class="list-disc pl-6 mb-6">
+      <li>Conta no <a href="https://supabase.com/" class="text-blue-500 underline">Supabase</a></li>
+      <li>Conta no <a href="https://stripe.com/" class="text-blue-500 underline">Stripe</a></li>
+      <li>Projeto com Next.js + TailwindCSS + ShadCN UI</li>
+    </ul>
+
+    <h2 class="text-2xl font-semibold text-gray-800 mb-3">🔐 1. INTEGRAÇÃO COM SUPABASE</h2>
+    <ol class="list-decimal pl-6 mb-6 space-y-2">
+      <li><strong>Criar projeto</strong> no Supabase e copiar as chaves <code>SUPABASE_URL</code> e <code>SUPABASE_ANON_KEY</code></li>
+      <li>Ir em SQL Editor e colar o conteúdo de <code>sql_plataforma_sorteios_diarios.sql</code></li>
+      <li>Habilitar autenticação por e-mail/senha</li>
+      <li>(Opcional) Criar bucket em <code>Storage</code> chamado <strong>comprovantes</strong></li>
+    </ol>
+
+    <h2 class="text-2xl font-semibold text-gray-800 mb-3">💳 2. INTEGRAÇÃO COM STRIPE</h2>
+    <ol class="list-decimal pl-6 mb-6 space-y-2">
+      <li><strong>Criar conta</strong> no Stripe e acessar dashboard</li>
+      <li>Criar produto (ex: Plano PRO) e obter <code>price_id</code></li>
+      <li>Configurar .env.local:
+        <pre class="bg-gray-100 p-2 rounded mt-2"><code>
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+STRIPE_SECRET_KEY=...
+STRIPE_WEBHOOK_SECRET=...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=...
+        </code></pre>
+      </li>
+      <li>Implementar rota <code>/api/stripe/checkout</code> com redirecionamento</li>
+      <li>Implementar <code>/api/stripe/webhook</code> e capturar evento <code>checkout.session.completed</code></li>
+    </ol>
+
+    <h2 class="text-2xl font-semibold text-gray-800 mb-3">🧩 3. FUNCIONAMENTO DO SISTEMA</h2>
+    <ul class="list-disc pl-6 mb-6">
+      <li>Sorteio diário é gerado automaticamente</li>
+      <li>Usuários participam com R$5 por número</li>
+      <li>Números são gerados aleatoriamente</li>
+      <li>Ao final do dia, um ganhador é sorteado</li>
+      <li>Ganhadores aparecem na landing page com dados e valor ganho</li>
+    </ul>
+
+    <h2 class="text-xl font-bold text-green-700 mt-10 mb-4">✅ Projeto pronto para produção</h2>
+    <ul class="list-disc pl-6">
+      <li>Supabase conectado</li>
+      <li>Stripe configurado com plano</li>
+      <li>Ambiente com variáveis preenchidas</li>
+      <li>Deploy pronto (ex: Vercel)</li>
+    </ul>
+
+    <p class="mt-10 text-center text-gray-500 italic">Desenvolvido com ❤️ para gerar engajamento e oportunidades reais.</p>
+  </div>
+</body>
+</html>

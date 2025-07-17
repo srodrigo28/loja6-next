@@ -189,6 +189,15 @@ export default function HomePage() {
               <Link href="/angular.html" className="text-blue-600 hover:underline">
               📄 Angular +17
               </Link>
+              <Link href="/laravel.html" className="text-blue-600 hover:underline">
+              📄 Larevel
+              </Link>
+              <Link href="/Api.html" className="text-blue-600 hover:underline">
+              📄 Api
+              </Link>
+              <Link href="/stripe.html" className="text-blue-600 hover:underline">
+              📄 Integração Stripe
+              </Link>
             </div>
           </div>
         </div>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Treinamento: Integração de API PIX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <style>
+        /* Cor de destaque: Roxo (Neutro e Profissional) */
+        .sidebar-link.active {
+            color: #8b5cf6;
+            font-weight: 600;
+            border-left-color: #8b5cf6;
+        }
+        .dark .sidebar-link.active {
+            color: #a78bfa;
+            border-left-color: #a78bfa;
+        }
+        
+        .mobile-menu-item .item-number {
+             transition: all 0.3s ease;
+        }
+        .mobile-menu-item.active .item-number {
+            background-color: #8b5cf6;
+            color: white;
+        }
+        .dark .mobile-menu-item.active .item-number {
+            background-color: #a78bfa;
+            color: #1e293b;
+        }
+        .mobile-menu-item.expanded {
+            background-color: #f5f3ff; /* Roxo claro */
+        }
+        .dark .mobile-menu-item.expanded {
+            background-color: #4c1d95; /* Roxo escuro */
+        }
+        /* Outros estilos ... */
+        ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: #f1f1f1; } .dark ::-webkit-scrollbar-track { background: #2d3748; } ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+    <button id="theme-toggle" class="fixed bottom-4 right-4 z-50 p-2 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-md">
+        <svg id="theme-toggle-dark-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        <svg id="theme-toggle-light-icon" class="hidden h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+    </button>
+    
+    <div id="mobile-menu" class="lg:hidden fixed top-0 left-0 right-0 p-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm shadow-lg z-40">
+        <div id="mobile-menu-items" class="flex items-center space-x-2 overflow-x-auto pb-1"></div>
+    </div>
+    
+    <div class="flex">
+        <aside class="fixed top-0 left-0 h-screen w-64 p-4 border-r border-slate-200 dark:border-slate-800 hidden lg:block">
+            <h2 class="text-xl font-bold mb-4">Índice PIX</h2>
+            <nav><ol id="sidebar-nav" class="space-y-2"></ol></nav>
+        </aside>
+
+        <main class="w-full lg:ml-64 p-4 md:p-8 pt-20 lg:pt-8 pb-24">
+            <div class="max-w-4xl mx-auto">
+                <header class="mb-12">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white">Treinamento: Integração de API PIX</h1>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 mt-3">Um guia completo para receber pagamentos automatizados.</p>
+                </header>
+
+                <div id="manual-content" class="space-y-16">
+                    
+                    <section id="step-1" class="manual-section">
+                        <h2 data-title="Visão Geral e Provedores" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Visão Geral e Escolha do Provedor</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Integrar um PIX automatizado envolve quatro atores: sua **aplicação**, seu **cliente**, o **gateway de pagamento** e o **banco do cliente**. O fluxo é simples:</p>
+                        <ol class="list-decimal list-inside mt-4 space-y-2 pl-4">
+                            <li>Sua aplicação solicita a criação de uma cobrança PIX ao gateway.</li>
+                            <li>O gateway devolve um QR Code e um "Copia e Cola".</li>
+                            <li>Seu cliente paga usando o app do banco dele.</li>
+                            <li>O gateway recebe a confirmação do banco e te notifica via **Webhook**.</li>
+                            <li>Sua aplicação processa a notificação e libera o produto/serviço.</li>
+                        </ol>
+                        <p class="mt-4 text-slate-600 dark:text-slate-400">A escolha de um bom gateway é crucial. Para simplicidade e qualidade da documentação, recomendamos:</p>
+                        <ul class="list-disc list-inside mt-2 space-y-1 pl-4">
+                            <li><strong>Stripe:</strong> Padrão mundial em experiência do desenvolvedor (DX).</li>
+                            <li><strong>Mercado Pago:</strong> Enorme confiança e popularidade no Brasil.</li>
+                            <li><strong>Asaas:</strong> Focado em automação financeira e com uma API muito direta.</li>
+                        </ul>
+                    </section>
+
+                    <section id="step-2" class="manual-section">
+                        <h2 data-title="Obtendo as Chaves de API" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 1: Cadastro e Chaves de API</h2>
+                        <p class="text-slate-600 dark:text-slate-400">O primeiro passo prático é criar sua conta no provedor escolhido (Stripe, Mercado Pago, etc.) e navegar até o painel de desenvolvedor para obter suas chaves de API.</p>
+                        <div class="mt-4 p-4 bg-purple-50 dark:bg-slate-800 border-l-4 border-purple-400 dark:border-purple-500 rounded">
+                            <p class="font-semibold text-purple-800 dark:text-purple-300">Tipos de Chave:</p>
+                            <ul class="list-disc list-inside text-sm text-purple-700 dark:text-purple-400 mt-2">
+                                <li><strong>Chave Publicável (Publishable Key):</strong> Pode ser usada no seu front-end com segurança. Ex: `pk_test_...`</li>
+                                <li><strong>Chave Secreta (Secret Key):</strong> **NUNCA** deve ser exposta no front-end. Use-a apenas no seu servidor. Ex: `sk_test_...`</li>
+                            </ul>
+                        </div>
+                        <p class="mt-4 text-slate-600 dark:text-slate-400">Guarde sua chave secreta em um local seguro, como um arquivo <code>.env</code> no seu projeto backend.</p>
+                    </section>
+                    
+                    <section id="step-3" class="manual-section">
+                        <h2 data-title="Criando a Cobrança" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 2: Criando a Cobrança PIX (Backend)</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Seu servidor é responsável por se comunicar com o gateway para criar a cobrança. Abaixo, um exemplo de como criar uma rota em um servidor Node.js com Express para fazer isso.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 server.js (Exemplo com Node.js + Stripe)</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-javascript">const express = require('express');
+const app = express();
+// Lembre-se de instalar o stripe: npm install stripe
+const stripe = require('stripe')('SUA_CHAVE_SECRETA_AQUI');
+
+app.post('/criar-cobranca-pix', async (req, res) => {
+  try {
+    // Na prática, o valor viria do corpo da requisição (req.body.amount)
+    const valorEmCentavos = 1000; // R$ 10,00
+
+    // Cria uma "Payment Intent" no Stripe, que gerará a cobrança PIX
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: valorEmCentavos,
+      currency: 'brl',
+      payment_method_types: ['pix'],
+    });
+
+    // A resposta do Stripe contém os dados do QR Code
+    const qrCodeData = paymentIntent.next_action.pix_display_qr_code;
+    
+    res.json({
+      qrCodeUrl: qrCodeData.image_url, // URL para uma imagem hospedada do QR Code
+      qrCodeText: qrCodeData.data // O texto "Copia e Cola"
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.listen(3000, () => console.log('Servidor rodando na porta 3000'));
+</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-4" class="manual-section">
+                        <h2 data-title="Exibindo o QR Code" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 3: Exibindo o QR Code (Frontend)</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Seu frontend chama a rota que criamos no backend, recebe os dados do PIX e os exibe para o usuário.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 index.html (Exemplo de Frontend)</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-html">&lt;div id="pix-container"&gt;
+  &lt;h3&gt;Pague com PIX para finalizar&lt;/h3&gt;
+  &lt;img id="qr-code-img" src="" alt="PIX QR Code" /&gt;
+  &lt;div&gt;
+    &lt;input id="copia-e-cola" type="text" readonly /&gt;
+    &lt;button id="copy-btn"&gt;Copiar&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+  async function carregarPix() {
+    const response = await fetch('/criar-cobranca-pix', { method: 'POST' });
+    const data = await response.json();
+
+    document.getElementById('qr-code-img').src = data.qrCodeUrl;
+    document.getElementById('copia-e-cola').value = data.qrCodeText;
+  }
+
+  document.getElementById('copy-btn').addEventListener('click', () => {
+    const text = document.getElementById('copia-e-cola');
+    text.select();
+    navigator.clipboard.writeText(text.value);
+    // Adicionar feedback visual de "Copiado!"
+  });
+
+  carregarPix();
+&lt;/script&gt;</code></pre>
+                        </div>
+                    </section>
+                    
+                    <section id="step-5" class="manual-section">
+                        <h2 data-title="Recebendo a Confirmação" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 4: Recebendo a Confirmação (Webhook)</h2>
+                        <p class="text-slate-600 dark:text-slate-400">Webhooks são a peça central da automação. O gateway envia uma notificação para o seu servidor quando o pagamento é confirmado. Você precisa criar uma rota no seu backend para receber essa notificação.</p>
+                        <p class="mt-4 font-mono text-sm bg-slate-200 dark:bg-slate-800 p-1 rounded inline-block">📄 server.js (continuação)</p>
+                        <div class="code-container relative mt-4">
+                            <pre><code class="language-javascript">// Rota para receber notificações do webhook do Stripe
+app.post('/webhook-stripe', express.raw({type: 'application/json'}), (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  const endpointSecret = 'SUA_CHAVE_SECRETA_DO_WEBHOOK_AQUI';
+  let event;
+
+  try {
+    // 1. Verifique a assinatura para garantir que a requisição é legítima
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // 2. Lide com o evento de pagamento bem-sucedido
+  if (event.type === 'payment_intent.succeeded') {
+    const paymentIntent = event.data.object;
+    console.log('Pagamento recebido!', paymentIntent.id);
+    
+    // 3. AQUI VAI SUA LÓGICA DE NEGÓCIO:
+    // - Atualize o status do pedido no seu banco de dados.
+    // - Envie um email de confirmação para o cliente.
+    // - Libere o acesso ao produto.
+  }
+
+  // Responda com 200 para confirmar o recebimento do evento
+  res.status(200).send();
+});</code></pre>
+                        </div>
+                    </section>
+
+                    <section id="step-6" class="manual-section">
+                        <h2 data-title="Gerando o Comprovante" class="text-3xl font-bold border-b border-slate-200 dark:border-slate-700 pb-2 mb-4">Passo 5: Gerando o Comprovante</h2>
+                        <p class="text-slate-600 dark:text-slate-400">O "comprovante" não é um arquivo que a API te entrega pronto. A API te entrega os **dados** do pagamento via webhook. Sua aplicação é responsável por usar esses dados para gerar uma confirmação para o usuário.</p>
+                        <p class="mt-4">Com os dados recebidos no webhook do Passo 4, sua lógica de negócio deve:</p>
+                        <ul class="list-disc list-inside mt-2 space-y-1 pl-4">
+                            <li><strong>Atualizar o Pedido:</strong> Encontre o pedido no seu banco de dados e mude seu status de `AGUARDANDO` para `PAGO`.</li>
+                            <li><strong>Enviar Confirmação:</strong> Dispare um e-mail transacional para o cliente confirmando o recebimento do pagamento e os próximos passos.</li>
+                            <li><strong>Gerar a Confirmação Visual:</strong> Crie uma página de "Obrigado" ou um painel de "Meus Pedidos" onde o usuário possa ver os detalhes da transação que você salvou no seu banco de dados (ID da transação, valor, data, etc.). Se necessário, use uma biblioteca como `PDFKit` ou `jsPDF` para gerar um recibo em PDF a partir desses dados.</li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            hljs.highlightAll();
+            const themeToggleBtn = document.getElementById('theme-toggle'),darkIcon = document.getElementById('theme-toggle-dark-icon'),lightIcon = document.getElementById('theme-toggle-light-icon');const applyTheme = (e) => {"dark" === e ? (document.documentElement.classList.add("dark"), darkIcon.classList.add("hidden"), lightIcon.classList.remove("hidden")) : (document.documentElement.classList.remove("dark"), lightIcon.classList.add("hidden"), darkIcon.classList.remove("hidden"))};const savedTheme = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");applyTheme(savedTheme),themeToggleBtn.addEventListener("click", () => {const e = document.documentElement.classList.contains("dark") ? "light" : "dark";localStorage.setItem("theme", e), applyTheme(e)});const sections = document.querySelectorAll(".manual-section"),sidebarNav = document.getElementById("sidebar-nav"),mobileMenu = document.getElementById("mobile-menu-items");sections.forEach((e, t) => {const o = e.id,l = e.querySelector("h2").dataset.title,d = t + 1;const c = document.createElement("li"),s = document.createElement("a");s.href = `#${o}`, s.textContent = `${d}. ${l}`, s.className = "sidebar-link block border-l-2 border-transparent pl-4 py-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors", sidebarNav && sidebarNav.appendChild(c.appendChild(s));const n = document.createElement("a");n.href = `#${o}`, n.className = "mobile-menu-item flex-shrink-0 flex items-center p-1 rounded-full bg-slate-200 dark:bg-slate-700 transition-all duration-300 ease-in-out", n.innerHTML = `<span class="item-number flex items-center justify-center h-8 w-8 rounded-full font-bold text-slate-600 dark:text-slate-300">${d}</span><span class="item-title hidden ml-2 mr-2 font-semibold whitespace-nowrap text-sm">${l}</span>`, mobileMenu && mobileMenu.appendChild(n), [s, n].forEach(t => {t.addEventListener("click", t => {t.preventDefault();const o = 80,l = e.getBoundingClientRect().top,d = l + window.pageYOffset - 80;window.scrollTo({top: d,behavior: "smooth"}), window.innerWidth < 1024 && (document.querySelectorAll(".mobile-menu-item").forEach(e => {e.classList.remove("expanded", "bg-purple-100", "dark:bg-purple-900"), e.querySelector(".item-title").classList.add("hidden")}), n.classList.add("expanded", "bg-purple-100", "dark:bg-purple-900"), n.querySelector(".item-title").classList.remove("hidden"))})})}), document.querySelectorAll(".code-container pre").forEach(e => {const t = document.createElement("button");t.textContent = "Copiar", t.className = "absolute top-2 right-2 px-2 py-1 text-xs rounded bg-slate-600 text-white hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-800 transition-colors opacity-50 hover:opacity-100", e.parentNode.insertBefore(t, e), t.addEventListener("click", () => {navigator.clipboard.writeText(e.querySelector("code").innerText).then(() => {t.textContent = "Copiado!", setTimeout(() => {t.textContent = "Copiar"}, 2e3)})})});const observer = new IntersectionObserver(e => {e.forEach(e => {if (e.isIntersecting) {const t = e.target.getAttribute("id"),o = document.querySelector(`.sidebar-link[href="#${t}"]`),l = document.querySelector(`.mobile-menu-item[href="#${t}"]`);document.querySelectorAll(".sidebar-link").forEach(e => e.classList.remove("active")), o && o.classList.add("active"), document.querySelectorAll(".mobile-menu-item").forEach(e => e.classList.remove("active")), l && l.classList.add("active"), l && !l.classList.contains("expanded") && l.scrollIntoView({behavior: "smooth",block: "nearest",inline: "center"})}})}, {rootMargin: "-20% 0px -80% 0px"});sections.forEach(e => observer.observe(e))
+        });
+    </script>
+</body>
+</html>
